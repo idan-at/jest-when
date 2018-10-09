@@ -1,4 +1,4 @@
-import { equals } from 'expect/build/jasmine_utils';
+import { equals } from "expect/build/jasmine_utils";
 
 export class WhenMock {
   constructor(fn, debug) {
@@ -7,11 +7,11 @@ export class WhenMock {
     this.debug = debug;
     this.log = (...args) => this.debug && console.log(...args);
 
-    const mockReturnValue = (matchers, assertCall, once = false) => (val) => {
+    const mockReturnValue = (matchers, assertCall, once = false) => val => {
       this.callMocks.push({ matchers, val, assertCall, once });
 
       this.fn.mockImplementation((...args) => {
-        this.log('mocked impl', args);
+        this.log("mocked impl", args);
 
         for (let i = 0; i < this.callMocks.length; i++) {
           const { matchers, val, assertCall } = this.callMocks[i];
@@ -38,20 +38,27 @@ export class WhenMock {
 
           if (match) {
             let removedOneItem = false;
-            this.callMocks = this.callMocks.filter(mock => !(mock.once && equals(mock.matchers, matchers) && !removedOneItem & (removedOneItem = true)));
+            this.callMocks = this.callMocks.filter(
+              mock =>
+                !(
+                  mock.once &&
+                  equals(mock.matchers, matchers) &&
+                  !removedOneItem & (removedOneItem = true)
+                )
+            );
             return val;
           }
         }
       });
     };
 
-    const mockResolvedValueOnce = (matchers, assertCall) => (val) =>
+    const mockResolvedValueOnce = (matchers, assertCall) => val =>
       mockReturnValueOnce(matchers, assertCall)(Promise.resolve(val));
 
-    const mockResolvedValue = (matchers, assertCall) => (val) =>
+    const mockResolvedValue = (matchers, assertCall) => val =>
       mockReturnValue(matchers, assertCall)(Promise.resolve(val));
 
-    const mockReturnValueOnce = (matchers, assertCall) => (val) =>
+    const mockReturnValueOnce = (matchers, assertCall) => val =>
       mockReturnValue(matchers, assertCall, true)(val);
 
     this.calledWith = (...matchers) => ({
